@@ -16,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -23,9 +24,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -90,6 +89,45 @@ public class AccessService {
 
         return ResponseDto.doSuccess(personDtoPage);
     }
+
+
+    public ResponseDto getPersonPage2(PersonPageQueryDto queryDto,
+                                     int pageSize, int pageNum) {
+
+        Pageable pageable = new PageRequest(pageNum, pageSize, Sort.Direction.DESC, "id");
+
+        Page<PersonDto> personDtoPage =
+                personRepository.findListAge(queryDto.getUserId(), pageable);
+
+        return ResponseDto.doSuccess(personDtoPage);
+    }
+
+
+
+    public ResponseDto getCount(String userId) {
+        List countList = personRepository.findCountByDate(userId);
+        List<Map> list = new ArrayList<>();
+        countList.forEach(item -> {
+            Object[] cells = (Object[]) item;
+            String count = cells[0].toString();
+            String accessTime = cells[1].toString();
+            Map _map = new HashMap();
+            _map.put("count",count);
+            _map.put("accessTime",accessTime);
+            list.add(_map);
+        });
+
+        return ResponseDto.doSuccess(list);
+
+    }
+
+
+    public ResponseDto findList(String userId, String accessTime) {
+        List countList = personRepository.findList(userId,accessTime);
+        return ResponseDto.doSuccess(countList);
+    }
+
+
 
 
 }

@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -69,8 +70,8 @@ public class UserService {
             return ResponseDto.doRet(ResponseCodeEnum.USER_NOT_EXISTS);
         }
         return ResponseDto.doSuccess(user);
-
     }
+
 
 
 }

@@ -70,4 +70,42 @@ public class UserController {
         return accessService.getPersonPage(queryDto, pageSize, pageNum-1);
     }
 
+
+
+    @RequestMapping(value="/getPerson2",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseDto getPerson2 (HttpServletRequest request){
+        String userId = request.getAttribute("userId").toString();
+        PersonPageQueryDto queryDto = new PersonPageQueryDto();
+        queryDto.setUserId(userId);
+        String accessTime = request.getParameter("accessTime");
+        queryDto.setAccessTime(accessTime);
+        String createTime = request.getParameter("createTime");
+        queryDto.setCreateTime(createTime);
+        int pageSize = Integer.parseInt(request.getParameter("pageSize"));
+        int pageNum = Integer.parseInt(request.getParameter("pageNum"));
+        if (pageNum <= 0) {
+            return ResponseDto.doRet(ResponseCodeEnum.PARAM_ERROR);
+        }
+
+        return accessService.getPersonPage2(queryDto, pageSize, pageNum-1);
+    }
+
+
+    @RequestMapping(value="/getCount",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseDto getCount (HttpServletRequest request){
+        String userId = request.getAttribute("userId").toString();
+        return accessService.getCount(userId);
+    }
+
+
+    @RequestMapping(value="/findList",method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseDto findList (HttpServletRequest request){
+        String userId = request.getAttribute("userId").toString();
+        String accessTime = request.getParameter("accessTime");
+        return accessService.findList(userId,accessTime);
+    }
+
 }

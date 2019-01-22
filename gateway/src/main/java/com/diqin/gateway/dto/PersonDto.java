@@ -10,6 +10,18 @@ import lombok.Data;
 @Data
 public class PersonDto {
 
+    public PersonDto() {
+    }
+
+    public PersonDto(String userId, String userName, int age, String mobile, String address, String weixin) {
+        this.userId = userId;
+        this.userName = userName;
+        this.age = age;
+        this.mobile = mobile;
+        this.address = address;
+        this.weixin = weixin;
+    }
+
     private Long id;
 
     private String userId;
