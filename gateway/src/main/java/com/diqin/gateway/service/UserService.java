@@ -54,11 +54,13 @@ public class UserService {
         Map<String, String> tokenMap = new HashMap<>();
         tokenMap.put("userId", userId);
         tokenMap.put("uuid", UUID.randomUUID().toString());
+        log.info(JSON.toJSONString(tokenMap));
         String token = AesUtil.AESEncode(JSON.toJSONString(tokenMap));
 
         redisTemplate.opsForValue().set(GatewayConst.LOGIN_TOKEN + userId, token,1, TimeUnit.DAYS);
         Map retMap = new HashMap();
         retMap.put("token", token);
+        log.info(token);
 
         return ResponseDto.doSuccess(retMap);
     }

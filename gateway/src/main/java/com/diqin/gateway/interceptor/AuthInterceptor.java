@@ -55,6 +55,8 @@ public class AuthInterceptor implements HandlerInterceptor {
                 return false;
             }
 
+            log.info(token);
+
             String redisToken = AesUtil.AESDecode(token);
             if (StringUtils.isEmpty(redisToken)) {
                 ResponseDto responseDto = ResponseDto.doRet(ResponseCodeEnum.TOKEN_ERROR);

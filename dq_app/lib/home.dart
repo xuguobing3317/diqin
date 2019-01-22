@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 
+import 'AllPerson.dart';
+import 'TodayView.dart';
+
 class HomePage extends StatefulWidget {
   HomePage();
   @override
@@ -12,6 +15,9 @@ class HomePage extends StatefulWidget {
 class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   var _pageController = new PageController(initialPage: 0);
+
+  List<Widget> list = List();
+  
   var _bottomText = ['今日随访', '所有病人'];
   var _bottomIcons = [
     [
@@ -54,35 +60,19 @@ class HomePageState extends State<HomePage> {
     });
   }
 
+   @override
+  void initState() {
+    list
+      ..add(TodayViewPage())
+      ..add(AllViewPage());
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: changeBannerTitle(),
-      ),
-      body: new PageView.builder(
-        onPageChanged: _pageChange,
-        controller: _pageController,
-        itemBuilder: (BuildContext context, int index) {
-          var str =
-              (index == 0) ? "这里是【HomePage】->【签到】页面" : "这里是【HomePage】->【我】页面";
-          return new Center(
-            child: new Container(
-              width: 340.0,
-              child: new Card(
-                color: Colors.blue,
-                elevation: 16.0,
-                child: new FlatButton(
-                  onPressed: (){},
-                  child:
-                      new Text(str, style: new TextStyle(color: Colors.white)),
-                ),
-              ),
-            ),
-          );
-        },
-        itemCount: _bottomText.length,
-      ),
+      
+      body: list[_currentIndex],
       bottomNavigationBar: new BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: [
@@ -96,9 +86,9 @@ class HomePageState extends State<HomePage> {
         //tabBottom的点击监听
         onTap: (int index) {
 //          _pageController.jumpToPage(index); //没有动画的页面切换
-          _pageController.animateToPage(index,
-              duration: new Duration(seconds: 2),
-              curve: new ElasticOutCurve(0.8));
+          // _pageController.animateToPage(index,
+          //     duration: new Duration(seconds: 2),
+          //     curve: new ElasticOutCurve(0.8));
           _pageChange(index);
           _currentIndex = index;
         },
