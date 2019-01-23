@@ -95,11 +95,30 @@ class AllViewPageWidgetState extends State<AllViewPage>
   }
 
   Widget itemCard(int i) {
+    String _name = _itemMap[i]['userName'];
+    int _age = _itemMap[i]['age'];
+    String _mobile =
+        _itemMap[i]['mobile'] == null ? "-" : _itemMap[i]['mobile'];
+    String _weixin =
+        _itemMap[i]['weixin'] == null ? "-" : _itemMap[i]['weixin'];
+    String _remark =
+        _itemMap[i]['remark'] == null ? "-" : _itemMap[i]['remark'];
+
+    String _lastAccessTime =
+        _itemMap[i]['lastAccessTime'] == null ? "-" : _itemMap[i]['lastAccessTime'];
+    
+
+    String _nextAccessTime =
+        _itemMap[i]['nextAccessTime'] == null ? "-" : _itemMap[i]['nextAccessTime'];
+
     return new Card(
         child: InkWell(
             onTap: () {},
             child: new ListTile(
-              title: new Text('船舶号:'),
+              title: new Text(
+                '$_name ($_age岁)',
+                style: TextStyle(fontSize: 18.0),
+              ),
               subtitle: new Container(
                 child: new Column(
                   children: <Widget>[
@@ -107,24 +126,14 @@ class AllViewPageWidgetState extends State<AllViewPage>
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '时间:',
-                            style: TextStyle(fontSize: 13.0),
-                          ),
-                        ),
-                      ],
-                    ),
-                    new Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Text(
-                            '港口:',
-                            style: TextStyle(fontSize: 13.0),
+                            '手机:$_mobile',
+                            style: TextStyle(fontSize: 15.0),
                           ),
                         ),
                         Expanded(
                           child: Text(
-                            '本次重量: KG',
-                            style: TextStyle(fontSize: 13.0),
+                            '微信:$_weixin',
+                            style: TextStyle(fontSize: 15.0),
                           ),
                         )
                       ],
@@ -133,24 +142,35 @@ class AllViewPageWidgetState extends State<AllViewPage>
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            '累计次数:',
-                            style: TextStyle(fontSize: 13.0),
+                            '上次随访时间:$_lastAccessTime',
+                            style: TextStyle(fontSize: 15.0),
                           ),
                         ),
+                      ],
+                    ),
+                    new Row(
+                      children: <Widget>[
                         Expanded(
                           child: Text(
-                            '累计重量: KG',
-                            style: TextStyle(fontSize: 13.0),
+                            '下次随访时间:$_nextAccessTime',
+                            style: TextStyle(fontSize: 15.0),
                           ),
-                        )
+                        ),
                       ],
-                    )
+                    ),
+                    new Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            '备注:$_remark',
+                            style: TextStyle(fontSize: 15.0),
+                          ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              )
-                  //new Text(_itemMap[i]['facid'])
-                  ,
-              //之前显示icon
+              ),
               leading: Icon(Icons.person, size: 50.0),
             )));
   }
@@ -342,14 +362,14 @@ class AllViewPageWidgetState extends State<AllViewPage>
       'pageSize': _rows.toString(),
       'pageNum': _page.toString(),
     };
+
+    debugPrint('url:$PersonListUrl');
+    debugPrint('body:$_params');
+    debugPrint('headers:$headers');
     result = await http
         .post(PersonListUrl, body: _params, headers: headers)
         .then((http.Response response) {
       var data = json.decode(response.body);
-
-      debugPrint('url:$PersonListUrl');
-      debugPrint('body:$_params');
-      debugPrint('headers:$headers');
 
       String rescode = data[RESP_CODE];
       String resMsg = data[RESP_MSG];
@@ -363,7 +383,14 @@ class AllViewPageWidgetState extends State<AllViewPage>
             backgroundColor: Color(0xFF499292),
             textColor: Color(0xFFFFFFFF));
       } else {
-        setState(() {});
+        setState(() {
+          Map<String, dynamic> _dataMap = data[RESP_DATA];
+          List _listMap = _dataMap['content'];
+          _listMap.forEach((item) {
+            _queryItemMap.add(item);
+          });
+          total = _dataMap['totalElements'];
+        });
       }
     });
     return result;

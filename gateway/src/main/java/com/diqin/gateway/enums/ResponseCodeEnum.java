@@ -16,6 +16,7 @@ public enum ResponseCodeEnum {
 	TOKEN_ERROR("100004", "TOKEN错误"),
 	TOKEN_INVALID("100005", "TOKEN已失效"),
 	PARAM_ERROR("100006", "参数错误"),
+	DATA_AUTHOR_ERROR("100007", "数据权限有误"),
 	_404("000404", "页面不存在"),
 	_500("000500", "服务内部错误"),
 	BUSI_ERROR("999999", "业务异常"),
@@ -79,13 +80,5 @@ public enum ResponseCodeEnum {
 		}
 		return map;
 	}
-
-	public boolean isSuccess() {
-		if (ResponseCodeEnum.SUCCESS.getCode().equals(this.getCode())) {
-			return true;
-		}
-		return false;
-	}
-	
 
 }

@@ -1,7 +1,9 @@
 package com.diqin.gateway.repository;
 
 import com.diqin.gateway.mapper.AccessLog;
+import com.diqin.gateway.mapper.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,6 +12,6 @@ import org.springframework.stereotype.Repository;
  * @Description:
  */
 @Repository
-public interface AccessLogRepository extends JpaRepository<AccessLog, String> {
+public interface AccessLogRepository extends JpaRepository<AccessLog, Long> ,JpaSpecificationExecutor<AccessLog> {
 
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -17,6 +18,7 @@ import java.util.Date;
 @Entity(name = "t_access_log")
 public class AccessLog {
     @Id
+    @GeneratedValue
     private Long id;
 
     @Column(name = "person_id")
@@ -26,14 +28,17 @@ public class AccessLog {
      * 随访时间
      */
     @Column(name = "access_time")
-    private Date accessTime;
+    private String accessTime;
 
     /**
      * 1: 已随访
      * 2: 未随访
      */
     @Column(name = "state")
-    private int state;
+    private String state;
+
+    @Column(name = "remark")
+    private String remark = "系统默认";
 
     @Column(name = "create_time")
     private Date createTime;

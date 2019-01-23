@@ -1,8 +1,11 @@
 package com.diqin.gateway.controller;
 
 import com.diqin.gateway.common.ResponseDto;
+import com.diqin.gateway.dto.AccessDto;
+import com.diqin.gateway.dto.AccessPageQueryDto;
 import com.diqin.gateway.dto.PersonDto;
 import com.diqin.gateway.dto.PersonPageQueryDto;
+import com.diqin.gateway.enums.AccessStateEnum;
 import com.diqin.gateway.enums.ResponseCodeEnum;
 import com.diqin.gateway.mapper.Person;
 import com.diqin.gateway.service.AccessService;
@@ -66,8 +69,42 @@ public class UserController {
         if (pageNum <= 0) {
             return ResponseDto.doRet(ResponseCodeEnum.PARAM_ERROR);
         }
-
         return accessService.getPersonPage(queryDto, pageSize, pageNum-1);
+    }
+
+    @RequestMapping(value = "/access", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseDto access(HttpServletRequest request) {
+        String userId = request.getAttribute("userId").toString();
+        Long personId = Long.parseLong(request.getParameter("personId"));
+        if (personId == 0) {
+            return ResponseDto.doRet(ResponseCodeEnum.PARAM_ERROR);
+        }
+        String accessTime = request.getParameter("accessTime");
+
+        String remark = request.getParameter("remark");
+
+        AccessDto accessDto = new AccessDto();
+        accessDto.setUserId(userId);
+        accessDto.setPersonId(personId);
+        accessDto.setAccessTime(accessTime);
+        accessDto.setRemark(remark);
+        accessDto.setAccessStateEnum(AccessStateEnum.NORMAL);
+        return accessService.doAccess(accessDto);
+    }
+
+
+
+    @RequestMapping(value = "/accessLog", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseDto accessLog(HttpServletRequest request) {
+        String userId = request.getAttribute("userId").toString();
+        Long personId = Long.parseLong(request.getParameter("personId"));
+        AccessPageQueryDto accessPageQueryDto = new AccessPageQueryDto();
+        accessPageQueryDto.setPersonId(personId);
+        int pageSize = Integer.parseInt(request.getParameter("pageSize"));
+        int pageNum = Integer.parseInt(request.getParameter("pageNum"));
+        return accessService.getAccessPage(accessPageQueryDto, pageSize, pageNum-1);
     }
 
 

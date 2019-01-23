@@ -18,7 +18,7 @@ import java.util.List;
  * @Description:
  */
 @Repository
-public interface PersonRepository extends JpaRepository<Person, String>
+public interface PersonRepository extends JpaRepository<Person, Long>
         ,JpaSpecificationExecutor<Person> {
 
     @Query("SELECT COUNT(*) AS _count, t.nextAccessTime AS accessTime FROM t_person t where t.userId=:userId GROUP BY t.nextAccessTime")
@@ -30,9 +30,15 @@ public interface PersonRepository extends JpaRepository<Person, String>
 
 
 
+
+    @Query("SELECT t FROM t_person t where  t.nextAccessTime = :accessTime")
+    List findListByAccessTime(@Param("accessTime") String accessTime);
+
+
+
     @Query(value="SELECT new com.diqin.gateway.dto.PersonDto(c.userId, c.userName," +
-            "c.age, c.mobile, c.address, c.weixin) FROM t_person c where c.userId=:userId",
-            countQuery = "SELECT count(*) FROM t_person c where userId=:userId")
-    public Page<PersonDto> findListAge(@Param("userId")String userId, Pageable pageable);
+            "c.age, c.mobile, c.address, c.weixin) FROM t_person c where c.userId=:userId and c.nextAccessTime = :accessTime",
+            countQuery = "SELECT count(*) FROM t_person c where userId=:userId and nextAccessTime = :accessTime")
+    public Page<PersonDto> findListPage(@Param("userId")String userId, @Param("accessTime") String accessTime, Pageable pageable);
 
 }

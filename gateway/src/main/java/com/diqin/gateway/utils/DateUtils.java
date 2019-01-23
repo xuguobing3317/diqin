@@ -373,11 +373,11 @@ public class DateUtils {
     /** 
      * 增加日期的月份。失败返回null。 
      * @param date 日期 
-     * @param yearAmount 增加数量。可为负数 
+     * @param monthAmount 增加数量。可为负数
      * @return 增加月份后的日期字符串 
      */  
-    public static String addMonth(String date, int yearAmount) {  
-        return addInteger(date, Calendar.MONTH, yearAmount);  
+    public static String addMonth(String date, int monthAmount) {
+        return addInteger(date, Calendar.MONTH, monthAmount);
     }  
       
     /** 
@@ -851,6 +851,11 @@ public class DateUtils {
     	
     	System.out.println(DateUtils.StringToDate("20161021084212"));
 //    	System.out.println(DateUtils.StringToDate("20161021084212", DateStyle.YYYYMMDDHHMMSS));
+        Date _date = DateUtils.StringToDate(DateUtils.getDate(new Date()),DateStyle.YYYY_MM_DD);
+        System.out.println(_date);
+        System.out.println(
+                DateUtils.addMonth(_date, 2)
+        );
 	}
 
 }

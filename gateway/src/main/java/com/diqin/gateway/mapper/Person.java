@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
 
@@ -18,6 +19,7 @@ import java.util.Date;
 public class Person {
 
     @Id
+    @GeneratedValue
     private Long id;
 
     @Column(name = "user_id")
@@ -44,11 +46,19 @@ public class Person {
     @Column(name = "next_access_time")
     private String nextAccessTime;
 
+    @Column(name = "unit")
+    private String unit = "D";
+
+    @Column(name = "count")
+    private int count = 90;
+
+    @Column(name = "remark")
+    private String remark = "-";
+
     @Column(name = "create_time")
     private Date createTime;
 
     @Column(name = "update_time")
     private Date updateTime = new Date();
-
 
 }

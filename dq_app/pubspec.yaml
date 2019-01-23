@@ -45,6 +45,11 @@ flutter:
     - images/ic_launcher.png
     - images/icon_username.png
     - images/icon_password.png
+    - images/refresh.png
+    - images/icon_ok.png
+    - images/icon_arrow.png
+    - images/icon_cry.png
+    - images/icon_refresh.png
 
   # To add assets to your application, add an assets section, like this:
   # assets:

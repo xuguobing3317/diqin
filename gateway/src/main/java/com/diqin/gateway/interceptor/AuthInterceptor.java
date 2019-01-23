@@ -5,7 +5,6 @@ import com.diqin.gateway.common.GatewayConst;
 import com.diqin.gateway.common.ResponseDto;
 import com.diqin.gateway.enums.ResponseCodeEnum;
 import com.diqin.gateway.utils.AesUtil;
-import com.sun.istack.internal.Nullable;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

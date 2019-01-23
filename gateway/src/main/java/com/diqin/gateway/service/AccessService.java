@@ -1,8 +1,13 @@
 package com.diqin.gateway.service;
 
 import com.diqin.gateway.common.ResponseDto;
+import com.diqin.gateway.dto.AccessDto;
+import com.diqin.gateway.dto.AccessPageQueryDto;
 import com.diqin.gateway.dto.PersonDto;
 import com.diqin.gateway.dto.PersonPageQueryDto;
+import com.diqin.gateway.enums.AccessStateEnum;
+import com.diqin.gateway.enums.ResponseCodeEnum;
+import com.diqin.gateway.mapper.AccessLog;
 import com.diqin.gateway.mapper.Person;
 import com.diqin.gateway.repository.AccessLogRepository;
 import com.diqin.gateway.repository.PersonRepository;
@@ -18,6 +23,7 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -45,6 +51,99 @@ public class AccessService {
     private AccessLogRepository accessLogRepository;
 
     private Logger log = LoggerFactory.getLogger(AccessService.class);
+
+
+
+    public ResponseDto doBatchAccess() {
+        String currentDate = DateUtils.getDate(new Date());
+        List<Person> personList = personRepository.findListByAccessTime(currentDate);
+        personList.forEach(
+                item -> {
+                    AccessDto accessDto = new AccessDto();
+                    accessDto.setUserId(item.getUserId());
+                    accessDto.setPersonId(item.getId());
+                    accessDto.setAccessTime(currentDate);
+                    doAccess(accessDto);
+                }
+        );
+        return ResponseDto.doSuccess();
+    }
+
+
+    @Transactional
+    public ResponseDto doAccess(AccessDto accessDto) {
+        String userId = accessDto.getUserId();
+        long personId = accessDto.getPersonId();
+        String accessTime = accessDto.getAccessTime();
+        String remark = accessDto.getRemark();
+        AccessStateEnum accessStateEnum = accessDto.getAccessStateEnum();
+
+        Person person = personRepository.findOne(personId);
+        if (null == person) {
+            return ResponseDto.doRet(ResponseCodeEnum.PARAM_ERROR);
+        }
+
+        if (!person.getUserId().equals(userId)) {
+            return ResponseDto.doRet(ResponseCodeEnum.DATA_AUTHOR_ERROR);
+        }
+        person.setRemark(remark);
+        person.setLastAccessTime(accessTime);
+        person.setNextAccessTime(getNextAccessTime(person));
+        personRepository.saveAndFlush(person);
+
+
+        AccessLog accessLog = new AccessLog();
+        accessLog.setAccessTime(accessTime);
+        accessLog.setPersonId(personId);
+        accessLog.setState(accessStateEnum.getCode());
+        accessLog.setCreateTime(new Date());
+        accessLog.setUpdateTime(accessLog.getCreateTime());
+        accessLog.setRemark(remark);
+        accessLogRepository.save(accessLog);
+
+        return ResponseDto.doSuccess();
+    }
+
+
+    String getNextAccessTime(Person person){
+        String accessTime = person.getNextAccessTime();
+        if (StringUtils.isEmpty(accessTime)) {
+            accessTime = DateUtils.getDate(new Date());
+        }
+        Date _date = DateUtils.StringToDate(accessTime,DateStyle.YYYY_MM_DD);
+        int count = person.getCount();
+        String unit = person.getUnit();
+        Date retDate;
+        if (unit.toUpperCase().equals("M")) {
+            retDate = DateUtils.addMonth(_date,count);
+        } else {
+            retDate = DateUtils.addDay(_date, count);
+        }
+        return DateUtils.DateToString(retDate, DateStyle.YYYY_MM_DD);
+
+    }
+
+
+    public ResponseDto getAccessPage(AccessPageQueryDto queryDto,
+                                     int pageSize, int pageNum) {
+        Pageable pageable = new PageRequest(pageNum, pageSize, Sort.Direction.DESC, "createTime");
+
+        Page<AccessLog> accessLogPage = accessLogRepository.findAll(new Specification<AccessLog>() {
+            @Override
+            public Predicate toPredicate(Root<AccessLog> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                List<Predicate> list = new ArrayList<>();
+                if (!StringUtils.isEmpty(queryDto.getPersonId())) {
+                    list.add(criteriaBuilder.equal(root.get("personId").as(Long.class),
+                            queryDto.getPersonId()));
+                }
+                Predicate[] p = new Predicate[list.size()];
+                return criteriaBuilder.and(list.toArray(p));
+            }
+        }, pageable);
+
+
+        return ResponseDto.doSuccess(accessLogPage);
+    }
 
     public ResponseDto getPersonPage(PersonPageQueryDto queryDto,
                                      int pageSize, int pageNum) {
@@ -97,9 +196,9 @@ public class AccessService {
         Pageable pageable = new PageRequest(pageNum, pageSize, Sort.Direction.DESC, "id");
 
         Page<PersonDto> personDtoPage =
-                personRepository.findListAge(queryDto.getUserId(), pageable);
+                personRepository.findListPage(queryDto.getUserId(), queryDto.getAccessTime(), pageable);
 
-        return ResponseDto.doSuccess(personDtoPage);
+         return ResponseDto.doSuccess(personDtoPage);
     }
 
 
@@ -125,6 +224,18 @@ public class AccessService {
     public ResponseDto findList(String userId, String accessTime) {
         List countList = personRepository.findList(userId,accessTime);
         return ResponseDto.doSuccess(countList);
+    }
+
+
+    public static void main(String[] args) {
+        AccessService accessService = new AccessService();
+        Person person = new Person();
+
+        person.setUnit("M");
+        person.setCount(3);
+        person.setNextAccessTime("2019-01-23");
+        System.out.println(accessService.getNextAccessTime(person));
+
     }
 
 
