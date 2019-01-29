@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:dq_app/common/AppConst.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:dq_app/common/AppUrl.dart';
 import 'package:http/http.dart' as http;
@@ -39,22 +38,19 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
         body: new GestureDetector(
-          child: new Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-              new Column(
-                mainAxisSize: MainAxisSize.max,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  _buildIcon(),
-                  _buildUserName(),
-                  _buildPassword(),
-                  _buildSubmit(context)
-                ],
-              ),
-                  _loadingContainer()
-            ]
-          ),
+          child: new Stack(fit: StackFit.expand, children: <Widget>[
+            new Column(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                _buildIcon(),
+                _buildUserName(),
+                _buildPassword(),
+                _buildSubmit(context)
+              ],
+            ),
+            _loadingContainer()
+          ]),
           onTap: () {
             FocusScope.of(context).requestFocus(FocusNode());
           },
@@ -66,24 +62,12 @@ class _LoginPageState extends State<LoginPage> {
     String password = _pwdcontroller.text;
 
     if (null == userName || userName.isEmpty) {
-      Fluttertoast.showToast(
-          msg: '请输入用户名',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIos: 1,
-          backgroundColor: Color(0xFF499292),
-          textColor: Color(0xFFFFFFFF));
+      showMsg('请输入用户名');
       return false;
     }
 
     if (null == password || password.isEmpty) {
-      Fluttertoast.showToast(
-          msg: '请输入密码',
-          toastLength: Toast.LENGTH_SHORT,
-          gravity: ToastGravity.BOTTOM,
-          timeInSecForIos: 1,
-          backgroundColor: Color(0xFF499292),
-          textColor: Color(0xFFFFFFFF));
+      showMsg('请输入密码');
       return false;
     }
 
@@ -112,13 +96,7 @@ class _LoginPageState extends State<LoginPage> {
           setState(() {
             _isLoading = false;
           });
-          Fluttertoast.showToast(
-              msg: _msg,
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIos: 1,
-              backgroundColor: Color(0xFF499292),
-              textColor: Color(0xFFFFFFFF));
+          showMsg(_msg);
         } else {
           setState(() {
             var content = data[RESP_DATA];
@@ -131,18 +109,15 @@ class _LoginPageState extends State<LoginPage> {
               _isLoading = false;
             });
             router.navigateTo(context, '/home', replace: true);
-            Fluttertoast.showToast(
-                msg: "  登录成功！ ",
-                toastLength: Toast.LENGTH_SHORT,
-                gravity: ToastGravity.CENTER,
-                timeInSecForIos: 1,
-                backgroundColor: Color(0xFF499292),
-                textColor: Color(0xFFFFFFFF));
+            showMsg("  登录成功！ ");
           });
         }
       });
     } catch (e) {
-      print(e);
+      setState(() {
+        _isLoading = false;
+      });
+      showMsg("  网络异常 ");
       return result;
     }
 

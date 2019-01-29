@@ -14,7 +14,6 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   int _currentIndex = 0;
-  var _pageController = new PageController(initialPage: 0);
 
   List<Widget> list = List();
   

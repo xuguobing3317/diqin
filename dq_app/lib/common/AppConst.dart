@@ -5,6 +5,8 @@ import 'package:dq_app/home.dart';
 import 'package:dq_app/LoginPage.dart';
 import 'dart:io';
 
+import 'package:fluttertoast/fluttertoast.dart';
+
 Router router = new Router();
 
 var loginHandler =
@@ -49,6 +51,17 @@ const String PARAM_ERROR = "100006"; // "参数错误"),
 const String PAGE_NOT_FOUND = "000404"; // "页面不存在"),
 const String PAGE_ERROR = "000500"; // "服务内部错误"),
 const String BUSI_ERROR = "999999"; // "业务异常"),
+
+
+void showMsg(String _msg) {
+  Fluttertoast.instance.showToast(
+              msg: _msg,
+              toastLength: Toast.LENGTH_SHORT,
+              gravity: ToastGravity.BOTTOM,
+              timeInSecForIos: 1,
+              backgroundColor: Color(0xFF499292),
+              textColor: Color(0xFFFFFFFF));
+}
 
 
 

@@ -361,7 +361,7 @@ class TodayViewPageWidgetState extends State<TodayViewPage>
       print('$resMsg[$rescode]');
       if (rescode != SUCCESS) {
         String _msg = '未查询到数据[$resMsg]';
-        Fluttertoast.showToast(
+        Fluttertoast.instance.showToast(
             msg: _msg,
             toastLength: Toast.LENGTH_SHORT,
             gravity: ToastGravity.BOTTOM,
